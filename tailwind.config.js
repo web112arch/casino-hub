@@ -1,17 +1,15 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
-
+export default {
+  content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
     extend: {
       colors: {
-        dark:{
-          100: '#cbd7ff08',
-          200: '#1a1d29',
-          300: '#0f111a8c',
-        }
-      },
-    },
+        bg: "#070A12",
+        card: "#0C1224",
+        primary: "#6C7CFF",
+        secondary: "#00E5FF",
+        accent: "#A855F7"
+      }
+    }
   },
-  plugins: [require("@tailwindcss/container-queries")],
+  plugins: []
 };
