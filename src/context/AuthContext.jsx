@@ -1,423 +1,366 @@
 'use client'
 
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
+
 import { apiClient, gameApi, authUtils } from '@/lib/api'
 import supabase from '@/lib/supabase'
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
-
-// User types
-// interface User {
-//   id: string
-//   email: string
-//   username?: string
-//   isAuthenticated: boolean
-//   isLoading: boolean
-//   profile: UserProfile | null
-//   balance: number
-// }
-
-// interface AuthContextType {
-//   user: User
-//   isLoading: boolean
-//   signIn: (email: string, password: string) => Promise<void>
-//   signUp: (email: string, password: string, metadata?: { name?: string }) => Promise<void>
-//   signInWithGoogle: () => Promise<void>
-//   signInWithTwitter: () => Promise<void>
-//   signInWithMetaMask: () => Promise<void>
-//   signOut: () => Promise<void>
-//   refreshProfile: () => Promise<void>
-//   updateUser: (profile: Partial<UserProfile>) => void
-//   updateBalance: (newBalance: number) => void
-//   fetchUserProfile: () => Promise<void>
-//   loginWithOTP?: (email: string, code: string) => Promise<void>
-// }
 
 const AuthContext = createContext(undefined)
 
+const initialUser = {
+  id: '',
+  email: '',
+  username: '',
+  isAuthenticated: false,
+  profile: null,
+  balance: 0
+}
+
+function safeSessionFlagGet(key) {
+  try {
+    return typeof window !== 'undefined' ? sessionStorage.getItem(key) : null
+  } catch {
+    return null
+  }
+}
+function safeSessionFlagRemove(key) {
+  try {
+    if (typeof window !== 'undefined') sessionStorage.removeItem(key)
+  } catch {}
+}
+function safeLocalRemove(key) {
+  try {
+    if (typeof window !== 'undefined') localStorage.removeItem(key)
+  } catch {}
+}
+
 export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false)
-  const [user, setUser] = useState({
-    id: '',
-    email: '',
-    username: '',
-    isAuthenticated: false,
-    isLoading: true,
-    profile: null,
-    balance: 0
-  })
-  
-  // Flag to prevent multiple simultaneous auth checks
-  const authCheckInProgress = React.useRef(false)
+  const [user, setUser] = useState({ ...initialUser })
 
-  // Fetch user profile (assumes user is already authenticated)
+  // prevent multiple simultaneous auth checks
+  const authCheckInProgress = useRef(false)
+
+  // prevent setState after unmount
+  const mountedRef = useRef(false)
+
+  const setUnauthenticated = useCallback(() => {
+    setUser(prev => ({
+      ...prev,
+      ...initialUser,
+      // mantém qualquer coisa extra que você queira preservar no futuro
+    }))
+  }, [])
+
+  const setAuthenticatedFromProfile = useCallback((profile) => {
+    setUser({
+      id: profile.id,
+      email: profile.email,
+      username: profile.username,
+      isAuthenticated: true,
+      profile,
+      balance: profile.balance ?? 0
+    })
+  }, [])
+
   const fetchUserProfile = useCallback(async () => {
     try {
       const response = await gameApi.user.getProfile()
-      if (response.success && response.data) {
-        const profile = response.data
-        setUser(prev => ({
-          ...prev,
-          id: profile.id,
-          email: profile.email,
-          username: profile.username,
-          isAuthenticated: true,
-          isLoading: false,
-          profile: profile,
-          balance: profile.balance
-        }))
-        console.log('✅ User profile loaded:', profile.username)
-      } else {
+      if (!response?.success || !response?.data) {
         throw new Error('Failed to fetch profile')
       }
+      const profile = response.data
+      if (mountedRef.current) setAuthenticatedFromProfile(profile)
+      console.log('✅ User profile loaded:', profile.username)
     } catch (error) {
       console.error('Failed to fetch user profile:', error)
-      setUser(prev => ({
-        ...prev,
-        isAuthenticated: false,
-        isLoading: false,
-        profile: null
-      }))
+      if (mountedRef.current) setUnauthenticated()
     }
-  }, [])
+  }, [setAuthenticatedFromProfile, setUnauthenticated])
 
-  // Check authentication status
   const checkAuthStatus = useCallback(async () => {
-    // Prevent multiple simultaneous auth checks
     if (authCheckInProgress.current) {
       console.log('🔄 Auth check already in progress, skipping')
       return
     }
 
-    // Check if we're in a redirect loop - if so, don't attempt auth check
-    if (typeof window !== 'undefined' && sessionStorage.getItem('auth_redirect_flag')) {
+    // redirect loop guard
+    if (safeSessionFlagGet('auth_redirect_flag')) {
       console.log('🔄 Auth redirect flag detected, skipping auth status check')
-      sessionStorage.removeItem('auth_redirect_flag')
-      sessionStorage.removeItem('logout_in_progress') // Clear logout flag as well
-      setUser(prev => ({
-        ...prev,
-        isAuthenticated: false,
-        isLoading: false,
-        profile: null
-      }))
+      safeSessionFlagRemove('auth_redirect_flag')
+      safeSessionFlagRemove('logout_in_progress')
+      if (mountedRef.current) setUnauthenticated()
       return
     }
-    
+
     try {
       authCheckInProgress.current = true
-      setIsLoading(true)
-      
+      if (mountedRef.current) setIsLoading(true)
+
       console.log('🔐 Starting auth status check')
       const isAuth = await authUtils.isAuthenticated()
-      
+
       if (isAuth) {
-        // User is authenticated, fetch profile
         console.log('✅ User is authenticated, fetching profile')
         await fetchUserProfile()
       } else {
-        // User is not authenticated
         console.log('❌ User is not authenticated')
-        setUser(prev => ({
-          ...prev,
-          isAuthenticated: false,
-          isLoading: false,
-          profile: null
-        }))
+        if (mountedRef.current) setUnauthenticated()
       }
     } catch (error) {
       console.error('Auth status check failed:', error)
-      setUser(prev => ({
-        ...prev,
-        isAuthenticated: false,
-        isLoading: false,
-        profile: null
-      }))
+      if (mountedRef.current) setUnauthenticated()
     } finally {
-      setIsLoading(false)
+      if (mountedRef.current) setIsLoading(false)
       authCheckInProgress.current = false
     }
-  }, [fetchUserProfile])
+  }, [fetchUserProfile, setUnauthenticated])
 
-  // Sign in with email/password
   const signIn = useCallback(async (email, password) => {
     try {
       setIsLoading(true)
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      })
-
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
-
-      // Token exchange will be handled automatically by onAuthStateChange
-      // when the SIGNED_IN event is triggered
+      // token exchange handled by onAuthStateChange
     } catch (error) {
       console.error('Sign in error:', error)
-      throw new Error(error.message || 'Sign in failed')
+      throw new Error(error?.message || 'Sign in failed')
     } finally {
       setIsLoading(false)
     }
   }, [])
 
-  // Sign up with email/password
   const signUp = useCallback(async (email, password, metadata) => {
     try {
       setIsLoading(true)
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: metadata
-        }
+        options: { data: metadata }
       })
-
       if (error) throw error
-
-      // Token exchange will be handled automatically by onAuthStateChange
-      // when the SIGNED_IN event is triggered
+      // token exchange handled by onAuthStateChange
     } catch (error) {
       console.error('Sign up error:', error)
-      throw new Error(error.message || 'Sign up failed')
+      throw new Error(error?.message || 'Sign up failed')
     } finally {
       setIsLoading(false)
     }
   }, [])
 
-  // Login with OTP
   const loginWithOTP = useCallback(async (email, code) => {
     try {
       setIsLoading(true)
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/otp/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Important: needed to receive cookies
-        body: JSON.stringify({ email, code })
-      })
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/otp/verify`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, code })
+        }
+      )
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'OTP verification failed')
+        throw new Error(data?.error || 'OTP verification failed')
       }
 
-      // Store tokens
-      if (data.token) {
-        localStorage.setItem('auth_token', data.token)
-      }
-      if (data.platformToken) {
-        localStorage.setItem('platform_token', data.platformToken)
-      }
+      // store tokens (se você realmente usa isso no app)
+      if (data?.token) localStorage.setItem('auth_token', data.token)
+      if (data?.platformToken) localStorage.setItem('platform_token', data.platformToken)
 
-      // Update user state with the returned user data
-      if (data.user) {
-        setUser({
-          id: data.user.id,
-          email: data.user.email,
-          username: data.user.username,
-          isAuthenticated: true,
-          isLoading: false,
-          profile: data.user,
-          balance: data.user.balance
-        })
+      if (data?.user) {
+        if (mountedRef.current) {
+          setUser({
+            id: data.user.id,
+            email: data.user.email,
+            username: data.user.username,
+            isAuthenticated: true,
+            profile: data.user,
+            balance: data.user.balance ?? 0
+          })
+        }
       }
 
       console.log('✅ OTP login successful')
     } catch (error) {
       console.error('OTP login error:', error)
-      throw new Error(error.message || 'OTP verification failed')
+      throw new Error(error?.message || 'OTP verification failed')
     } finally {
       setIsLoading(false)
     }
   }, [])
 
-  // Sign in with Google
   const signInWithGoogle = useCallback(async () => {
     try {
       setIsLoading(true)
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`
         }
       })
-
       if (error) throw error
     } catch (error) {
       console.error('Google sign in error:', error)
-      throw new Error(error.message || 'Google sign in failed')
+      throw new Error(error?.message || 'Google sign in failed')
     } finally {
       setIsLoading(false)
     }
   }, [])
 
-  // Sign in with Twitter
   const signInWithTwitter = useCallback(async () => {
     try {
       setIsLoading(true)
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'twitter',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`
         }
       })
-
       if (error) throw error
     } catch (error) {
       console.error('Twitter sign in error:', error)
-      throw new Error(error.message || 'Twitter sign in failed')
+      throw new Error(error?.message || 'Twitter sign in failed')
     } finally {
       setIsLoading(false)
     }
   }, [])
 
-  // Sign in with MetaMask
-  const signInWithMetaMask = useCallback(async (walletAddress, message, signature) => {
+  // ✅ MetaMask login: params limpos + checagens
+  const signInWithMetaMask = useCallback(async (walletAddress) => {
     try {
       setIsLoading(true)
-      console.log('🔐 MetaMask wallet connected:', walletAddress)
 
-      // Step 1: Get nonce from backend
-      const nonceResponse = await apiClient.post('/auth/wallet/nonce', {
-        walletAddress
-      })
-
-      if (!nonceResponse.data?.nonce || !nonceResponse.data?.message) {
-        throw new Error('Failed to get authentication nonce')
+      if (typeof window === 'undefined') {
+        throw new Error('MetaMask login is only available in the browser')
+      }
+      if (!window.ethereum) {
+        throw new Error('MetaMask is not installed. Please install the MetaMask extension.')
+      }
+      if (!walletAddress) {
+        throw new Error('Wallet address is required')
       }
 
-      const { message } = nonceResponse.data
+      console.log('🔐 MetaMask wallet connected:', walletAddress)
 
-      // Step 2: Sign the message with MetaMask
+      // Step 1: Get nonce/message
+      const nonceResponse = await apiClient.post('/auth/wallet/nonce', { walletAddress })
+
+      const nonceMessage = nonceResponse?.data?.message
+      if (!nonceMessage) {
+        throw new Error('Failed to get authentication message')
+      }
+
+      // Step 2: Sign message
       console.log('📝 Requesting signature from MetaMask...')
       const signature = await window.ethereum.request({
         method: 'personal_sign',
-        params: [message, walletAddress]
+        params: [nonceMessage, walletAddress]
       })
 
-      if (!signature) {
-        throw new Error('Signature request was rejected')
-      }
+      if (!signature) throw new Error('Signature request was rejected')
 
       console.log('✅ Message signed successfully')
 
-      // Step 3: Verify signature and login
+      // Step 3: Verify
       const verifyResponse = await apiClient.post('/auth/wallet/verify', {
         walletAddress,
         signature
       })
 
-      if (verifyResponse.data?.success && verifyResponse.data?.user) {
-        // Update user state
+      if (verifyResponse?.data?.success && verifyResponse?.data?.user) {
         const userData = verifyResponse.data.user
-        setUser({
-          id: userData.id,
-          email: userData.email || '',
-          username: userData.username,
-          isAuthenticated: true,
-          isLoading: false,
-          profile: userData,
-          balance: userData.balance
-        })
-
+        if (mountedRef.current) {
+          setUser({
+            id: userData.id,
+            email: userData.email || '',
+            username: userData.username,
+            isAuthenticated: true,
+            profile: userData,
+            balance: userData.balance ?? 0
+          })
+        }
         console.log('✅ MetaMask authentication successful:', userData.username)
       } else {
         throw new Error('Verification failed')
       }
     } catch (error) {
       console.error('MetaMask sign in error:', error)
-      
-      // User-friendly error messages
-      if (error.code === 4001) {
+
+      // user-friendly errors
+      if (error?.code === 4001) {
         throw new Error('MetaMask signature request was rejected')
-      } else if (error.message?.includes('not installed')) {
-        throw new Error('MetaMask is not installed. Please install the MetaMask extension.')
-      } else {
-        throw new Error(error.message || 'MetaMask authentication failed')
       }
+      throw new Error(error?.message || 'MetaMask authentication failed')
     } finally {
       setIsLoading(false)
     }
-  }, [fetchUserProfile])
+  }, [])
 
-  // Exchange Supabase token for platform JWT
   const exchangeToken = useCallback(async (supabaseToken) => {
     try {
-      // Check if we're in a redirect loop - if so, don't attempt token exchange
-      if (typeof window !== 'undefined' && sessionStorage.getItem('auth_redirect_flag')) {
+      if (safeSessionFlagGet('auth_redirect_flag')) {
         console.log('🔄 Auth redirect flag detected, skipping token exchange')
-        sessionStorage.removeItem('auth_redirect_flag')
-        sessionStorage.removeItem('logout_in_progress') // Clear logout flag as well
-        setUser(prev => ({
-          ...prev,
-          isAuthenticated: false,
-          isLoading: false,
-          profile: null
-        }))
+        safeSessionFlagRemove('auth_redirect_flag')
+        safeSessionFlagRemove('logout_in_progress')
+        if (mountedRef.current) setUnauthenticated()
         return
       }
 
-      const response = await apiClient.post('/auth/exchange', {
-        token: supabaseToken
-      })
+      const response = await apiClient.post('/auth/exchange', { token: supabaseToken })
 
-      if (response.data.success) {
+      if (response?.data?.success) {
         console.log('✅ Platform token obtained and stored in cookie')
-        // Fetch user profile after successful token exchange
         await fetchUserProfile()
       } else {
         throw new Error('Token exchange failed')
       }
     } catch (error) {
       console.error('❌ Token exchange failed:', error)
-      // Clear user state on token exchange failure
-      setUser(prev => ({
-        ...prev,
-        isAuthenticated: false,
-        isLoading: false,
-        profile: null
-      }))
-      // Ensure Supabase session and local tokens are cleared to avoid repeated failures
+
+      if (mountedRef.current) setUnauthenticated()
+
+      // cleanup to avoid repeated failures
       try {
         await supabase.auth.signOut()
-      } catch (_) {}
-      if (typeof window !== 'undefined') {
-        try {
-          // Supabase stores session under this key pattern in localStorage
-          localStorage.removeItem('supabase.auth.token')
-          // Clear any app-specific tokens if present
-          localStorage.removeItem('auth_token')
-          localStorage.removeItem('platform_token')
-          sessionStorage.removeItem('auth_redirect_flag')
-          sessionStorage.removeItem('logout_in_progress')
-        } catch (_) {}
-      }
+      } catch {}
+
+      safeLocalRemove('supabase.auth.token')
+      safeLocalRemove('auth_token')
+      safeLocalRemove('platform_token')
+      safeSessionFlagRemove('auth_redirect_flag')
+      safeSessionFlagRemove('logout_in_progress')
+
       throw error
     }
-  }, [fetchUserProfile])
+  }, [fetchUserProfile, setUnauthenticated])
 
-  // Sign out
   const signOut = useCallback(async () => {
     try {
       setIsLoading(true)
-      
-      // Call backend logout to clear cookie
+
+      // backend logout (clear cookie)
       await authUtils.logout()
-      
-      // Sign out from Supabase
+
+      // supabase logout
       await supabase.auth.signOut()
-      
-      // Clear user state
-      setUser({
-        id: '',
-        email: '',
-        username: '',
-        isAuthenticated: false,
-        isLoading: false,
-        profile: null,
-        balance: 0
-      })
-      
+
+      if (mountedRef.current) setUnauthenticated()
+
       console.log('✅ User signed out successfully')
-      
-      // Redirect to home page
+
       if (typeof window !== 'undefined') {
         window.location.href = '/'
       }
@@ -426,75 +369,70 @@ export function AuthProvider({ children }) {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [setUnauthenticated])
 
-  // Refresh user profile
   const refreshProfile = useCallback(async () => {
-    if (user.isAuthenticated) {
-      await fetchUserProfile()
-    }
+    if (user.isAuthenticated) await fetchUserProfile()
   }, [user.isAuthenticated, fetchUserProfile])
 
-  // Update user profile
-  const updateUser = useCallback((profile) => {
+  const updateUser = useCallback((profilePatch) => {
     setUser(prev => ({
       ...prev,
-      profile: prev.profile ? { ...prev.profile, ...profile } : null
+      profile: prev.profile ? { ...prev.profile, ...profilePatch } : prev.profile
     }))
   }, [])
 
-  // Update user balance
   const updateBalance = useCallback((newBalance) => {
     setUser(prev => ({
       ...prev,
       balance: newBalance,
-      profile: prev.profile ? { ...prev.profile, balance: newBalance } : null
+      profile: prev.profile ? { ...prev.profile, balance: newBalance } : prev.profile
     }))
   }, [])
 
-  // Listen to auth state changes
+  // Supabase auth listener
   useEffect(() => {
+    mountedRef.current = true
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('🔄 Auth state change:', event, session?.user?.email)
-        
-        // Check if we're in a redirect loop - if so, don't process auth state changes
-        if (typeof window !== 'undefined' && sessionStorage.getItem('auth_redirect_flag')) {
+
+        if (safeSessionFlagGet('auth_redirect_flag')) {
           console.log('🔄 Auth redirect flag detected, skipping auth state change processing')
           return
         }
-        
-        if (event === 'SIGNED_IN' && session?.user || event === 'INITIAL_SESSION' && session?.user) {
-          // Exchange Supabase token for platform JWT
-          if (session.access_token) {
-            try {
-              await exchangeToken(session.access_token)
-            } catch (error) {
-              console.error('❌ Failed to exchange token:', error)
-            }
+
+        const hasUser = !!session?.user
+        const hasToken = !!session?.access_token
+
+        if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && hasUser && hasToken) {
+          try {
+            await exchangeToken(session.access_token)
+          } catch (error) {
+            console.error('❌ Failed to exchange token:', error)
           }
-        } else if (event === 'SIGNED_OUT') {
-          // Clear user state
-          setUser(prev => ({
-            ...prev,
-            isAuthenticated: false,
-            profile: null
-          }))
+        }
+
+        if (event === 'SIGNED_OUT') {
+          if (mountedRef.current) setUnauthenticated()
         }
       }
     )
 
     return () => {
+      mountedRef.current = false
       subscription.unsubscribe()
     }
-  }, [exchangeToken])
+  }, [exchangeToken, setUnauthenticated])
 
-  // Check auth status on mount only
+  // Check auth once on mount
   useEffect(() => {
     checkAuthStatus()
-  }, []) // Empty dependency array - only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  const value = {
+  const value = useMemo(() => ({
     user,
     isLoading,
     signIn,
@@ -508,7 +446,21 @@ export function AuthProvider({ children }) {
     updateBalance,
     fetchUserProfile,
     loginWithOTP
-  }
+  }), [
+    user,
+    isLoading,
+    signIn,
+    signUp,
+    signInWithGoogle,
+    signInWithTwitter,
+    signInWithMetaMask,
+    signOut,
+    refreshProfile,
+    updateUser,
+    updateBalance,
+    fetchUserProfile,
+    loginWithOTP
+  ])
 
   return (
     <AuthContext.Provider value={value}>
