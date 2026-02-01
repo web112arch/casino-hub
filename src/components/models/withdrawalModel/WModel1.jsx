@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from "react";
+import styled from "styled-components";
 
-
-//assets
-import styled from 'styled-components';
+// assets
 import RLB from "../../../assets/images/Frame (60).svg";
 import ERC from "../../../assets/images/Frame 160.svg";
 import BTC from "../../../assets/images/IMAGE (1).svg";
@@ -13,587 +12,436 @@ import COIN from "../../../assets/images/IMAGE (5).svg";
 import NFT from "../../../assets/images/svg.svg";
 import ARROW from "../../../assets/modelImages/Frame (5).svg";
 
+// scrollbar style
+const ScrollWrap = styled.div`
+  overflow-y: auto;
+  overflow-x: hidden;
 
-
-
-
-
-
-//overflow style
-const StyledComponent = styled.div`
-
-
-&::-webkit-scrollbar {
-  width: 0.6rem;
-}
-
-&::-webkit-scrollbar-track {
-  background: #1A1D29;
-}
-
-&::-webkit-scrollbar-thumb {
-  border-radius: 6px;
-  background: rgba(203, 215, 255, 0.08);
-}
-
+  &::-webkit-scrollbar {
+    width: 0.6rem;
+  }
+  &::-webkit-scrollbar-track {
+    background: #1a1d29;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    background: rgba(203, 215, 255, 0.08);
+  }
 `;
 
-
-
-
-const WModel1 = () => {
-
-    const [isCoin, setisCoin] = useState("");
-
-
-    if (isCoin === "bitCoin") {
-        return (
-            <StyledComponent style={{ overflowY: "scroll", overflowX: "hidden", height: "25pc" }}>
-                {/* title */}
-                <div style={{ color: "#FFF", fontSize: "22px", textTransform: "uppercase", margin: "-10px 3.1pc" }}>
-
-                    <p style={{ display: "flex", alignItems: "center", margin: "10px 0" }}><img onClick={() => setisCoin("")} src={ARROW} alt="arrow" style={{ width: "9px", height: "16px", marginTop: "3px", cursor: "pointer" }} />
-
-                        <img src={BTC} alt="btc" style={{ width: "32px", height: "32px", marginLeft: "25px" }} />
-
-                        <span style={{ margin: "0 6px", width: "225px" }}>Withdraw Bitcoin</span>
-                        <p style={{ width: "422px", color: "#FFB018", textTransform: "none", fontSize: "14px", marginLeft: "10px", fontStyle: "normal", fontWeight: "400", }}>View Transactions</p>
-                    </p>
-                </div>
-
-
-                {/* New div sec========================== */}
-
-
-                <div style={{ width: "725px", height: "440px", margin: "0px 40px", marginTop: "40px", borderRadius: "8px", background: "rgba(203, 215, 255, 0.03)" }}>
-                    <div>
-                        <div>
-                            <p style={{ width: "720px", color: "#B1B6C6", padding: "15px 25px", fontSize: "14px", fontStyle: "normal", fontWeight: "400" }}>Please enter the Bitcoin wallet address you wish to receive the funds on. Once confirmed, the withdrawal is usually processed within a few minutes.</p>
-                        </div>
-
-
-                        {/* input sec================ */}
-
-                        <div>
-                            <div>
-                                <p style={{ width: "270px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", textTransform: "uppercase", display: "flex", gap: "5px", padding: "10px 25px" }}>Receiving Bitcoin address <span style={{ color: "#FF4949", fontSize: "12px" }}>*</span></p>
-                            </div>
-
-
-                            <div>
-                                <input type="text" style={{ width: "675px", height: "58px", margin: "5px 25px", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)", padding: "0 10px", color: "#fff" }} />
-                            </div>
-
-                            {/* NEW sec================ */}
-
-                            <div>
-                                <p style={{ width: "270px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", textTransform: "uppercase", display: "flex", gap: "5px", padding: "20px 25px" }}>Withdrawal amount <span style={{ color: "#FF4949", fontSize: "12px" }}>*</span></p>
-                            </div>
-
-                            {/* input section */}
-                            <div style={{ display: "flex", }}>
-                                <div style={{ display: "flex", width: "230px", color: "#fff", flexDirection: "column", alignItems: "flex-start", margin: "20px 20px", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)", }}>
-                                    <div style={{ display: "flex", width: "280px", justifyContent: "space-between" }}>
-                                        <img src={COIN} alt="coin" style={{ marginLeft: "10px" }} />
-                                        <input type="text" style={{ background: "transparent", width: "15pc", height: "3.7pc", outline: "none" }} />
-
-                                    </div>
-
-                                </div>
-
-                                <p style={{ color: "#fff", fontSize: "18px", marginTop: "35px" }}>=</p>
-
-
-
-                                <div style={{ display: "flex", width: "230px", color: "#fff", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", margin: "20px 20px", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)", }}>
-                                    <div style={{ display: "flex", width: "280px", justifyContent: "space-between", alignItems: "center" }}>
-                                        <img src={BTC} alt="coin" style={{ marginLeft: "10px", height: "20px" }} />
-                                        <input type="text" style={{ background: "transparent", width: "15pc", height: "2.7pc", outline: "none", marginLeft: '10px' }} />
-                                        <div style={{ display: "inline-flex", padding: "18px 30px", margin: "-5px 2pc", height: "55px", borderRadius: "8px", background: "#86F454", boxShadow: "0px 0px 10px 0px rgba(118, 255, 25, 0.40)", textAlign: "center", textTransform: "uppercase" }}>
-
-                                            <p style={{ textTransform: "uppercase", marginTop: "-13px", fontWeight: "400", fontSize: "14px", fontStyle: "normal", color: "#141722" }}>Request <br /> withdrawal</p>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-
-
-
-
-
-                            </div>
-
-
-
-
-
-
-
-
-
-
-
-                            <div>
-                                <div>
-                                    <p style={{ width: "110px", display: "flex", gap: "10px", margin: "15px 25px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>Network Fee: <span>$1.13</span></p>
-                                </div>
-
-                                <div style={{ margin: "0 25px" }}>
-                                    <p style={{ width: "525px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>*You will receive the specified Bitcoin amount to your withdrawal address</p>
-
-
-                                    <p style={{ width: "585px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>*The value subtracted from your balance may vary between now and the time we process your withdrawal</p>
-                                </div>
-                            </div>
-
-
-
-
-                        </div>
-
-
-
-                    </div>
-                </div>
-
-
-
-            </StyledComponent>
-        )
-    }
-
-    if (isCoin === "ethereum") {
-
-        return (
-            <StyledComponent style={{ overflowY: "scroll", overflowX: "hidden", height: "24.5pc" }}>
-
-                {/* title */}
-                <div style={{ color: "#FFF", fontSize: "22px", textTransform: "uppercase", margin: "-10px 3.1pc" }}>
-
-                    <p style={{ display: "flex", alignItems: "center", margin: "10px 0" }}><img onClick={() => setisCoin("")} src={ARROW} alt="arrow" style={{ width: "9px", height: "16px", marginTop: "3px", cursor: "pointer" }} />
-
-                        <img src={ETH} alt="eth" style={{ width: "32px", height: "32px", marginLeft: "25px" }} />
-
-                        <span style={{ margin: "0 6px", width: "285px" }}>Withdraw ETHereum</span>
-                        <p style={{ width: "422px", color: "#FFB018", textTransform: "none", fontSize: "14px", marginLeft: "10px", fontStyle: "normal", fontWeight: "400", }}>View Transactions</p>
-                    </p>
-                </div>
-
-
-                {/* New div sec========================== */}
-
-
-                <div style={{ width: "725px", height: "440px", margin: "0px 40px", marginTop: "40px", borderRadius: "8px", background: "rgba(203, 215, 255, 0.03)" }}>
-                    <div>
-                        <div>
-                            <p style={{ width: "720px", color: "#B1B6C6", padding: "15px 25px", fontSize: "14px", fontStyle: "normal", fontWeight: "400" }}>Please enter the Ethereum wallet address you wish to receive the funds on. Once confirmed, the withdrawal is usually processed within a few minutes.</p>
-                        </div>
-
-
-                        {/* input sec================ */}
-
-                        <div>
-                            <div>
-                                <p style={{ width: "270px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", textTransform: "uppercase", display: "flex", gap: "5px", padding: "10px 25px" }}>Receiving Ethereum address <span style={{ color: "#FF4949", fontSize: "12px" }}>*</span></p>
-                            </div>
-
-
-                            <div>
-                                <input type="text" style={{ width: "675px", height: "58px", margin: "5px 25px", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)", padding: "0 10px", color: "#fff" }} />
-                            </div>
-
-                            {/* NEW sec================ */}
-
-                            <div>
-                                <p style={{ width: "270px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", textTransform: "uppercase", display: "flex", gap: "5px", padding: "20px 25px" }}>Withdrawal amount <span style={{ color: "#FF4949", fontSize: "12px" }}>*</span></p>
-                            </div>
-
-
-                            <div style={{ display: "flex", }}>
-                                <div style={{ display: "flex", width: "230px", color: "#fff", flexDirection: "column", alignItems: "flex-start", margin: "20px 20px", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)", }}>
-                                    <div style={{ display: "flex", width: "280px", justifyContent: "space-between" }}>
-                                        <img src={COIN} alt="coin" style={{ marginLeft: "10px" }} />
-                                        <input type="text" style={{ background: "transparent", width: "15pc", height: "3.7pc", outline: "none" }} />
-
-                                    </div>
-
-                                </div>
-
-                                <p style={{ color: "#fff", fontSize: "18px", marginTop: "35px" }}>=</p>
-
-
-
-                                <div style={{ display: "flex", width: "230px", color: "#fff", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", margin: "20px 20px", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)", }}>
-                                    <div style={{ display: "flex", width: "280px", justifyContent: "space-between", alignItems: "center" }}>
-                                        <img src={ETH} alt="coin" style={{ marginLeft: "10px", height: "20px" }} />
-                                        <input type="text" style={{ background: "transparent", width: "15pc", height: "2.7pc", outline: "none", marginLeft: '10px' }} />
-                                        <div style={{ display: "inline-flex", padding: "18px 30px", margin: "-5px 2pc", height: "55px", borderRadius: "8px", background: "#86F454", boxShadow: "0px 0px 10px 0px rgba(118, 255, 25, 0.40)", textAlign: "center", textTransform: "uppercase" }}>
-
-                                            <p style={{ textTransform: "uppercase", marginTop: "-13px", fontWeight: "400", fontSize: "14px", fontStyle: "normal", color: "#141722" }}>Request <br /> withdrawal</p>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-
-
-
-
-
-                            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            <div>
-                                <div>
-                                    <p style={{ width: "110px", display: "flex", gap: "10px", margin: "15px 25px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>Network Fee: <span>$1.45</span></p>
-                                </div>
-
-                                <div style={{ margin: "0 25px" }}>
-                                    <p style={{ width: "525px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>*You will receive the specified Ethereum amount to your withdrawal address</p>
-
-
-                                    <p style={{ width: "585px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>*The value subtracted from your balance may vary between now and the time we process your withdrawal</p>
-                                </div>
-                            </div>
-
-
-
-
-                        </div>
-
-
-
-                    </div>
-                </div>
-
-
-
-            </StyledComponent>
-        )
-
-    }
-    if (isCoin === "latecoin") {
-
-        return (
-            <StyledComponent style={{ overflowY: "scroll", overflowX: "hidden", height: "24.5pc" }}>
-                {/* title */}
-                <div style={{ color: "#FFF", fontSize: "22px", textTransform: "uppercase", margin: "-10px 3.1pc" }}>
-
-                    <p style={{ display: "flex", alignItems: "center", margin: "10px 0" }}><img onClick={() => setisCoin("")} src={ARROW} alt="arrow" style={{ width: "9px", height: "16px", marginTop: "3px", cursor: "pointer" }} />
-
-                        <img src={LTC} alt="ltc" style={{ width: "32px", height: "32px", marginLeft: "25px" }} />
-
-                        <span style={{ margin: "0 6px", width: "285px" }}>Withdraw Litecoin</span>
-                        <p style={{ width: "422px", color: "#FFB018", textTransform: "none", fontSize: "14px", marginLeft: "10px", fontStyle: "normal", fontWeight: "400", }}>View Transactions</p>
-                    </p>
-                </div>
-
-
-                {/* New div sec========================== */}
-
-
-                <div style={{ width: "725px", height: "440px", margin: "0px 40px", marginTop: "40px", borderRadius: "8px", background: "rgba(203, 215, 255, 0.03)" }}>
-                    <div>
-                        <div>
-                            <p style={{ width: "720px", color: "#B1B6C6", padding: "15px 25px", fontSize: "14px", fontStyle: "normal", fontWeight: "400" }}>Please enter the Litecoin wallet address you wish to receive the funds on. Once confirmed, the withdrawal is usually processed within a few minutes.</p>
-                        </div>
-
-
-                        {/* input sec================ */}
-
-                        <div>
-                            <div>
-                                <p style={{ width: "270px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", textTransform: "uppercase", display: "flex", gap: "5px", padding: "10px 25px" }}>Receiving Litecoin address <span style={{ color: "#FF4949", fontSize: "12px" }}>*</span></p>
-                            </div>
-
-
-                            <div>
-                                <input type="text" style={{ width: "675px", height: "58px", margin: "5px 25px", padding: "0 10px", color: "#fff", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)" }} />
-                            </div>
-
-                            {/* NEW sec================ */}
-
-                            <div>
-                                <p style={{ width: "270px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", textTransform: "uppercase", display: "flex", gap: "5px", padding: "20px 25px" }}>Withdrawal amount <span style={{ color: "#FF4949", fontSize: "12px" }}>*</span></p>
-                            </div>
-
-
-                            <div style={{ display: "flex", }}>
-                                <div style={{ display: "flex", width: "230px", color: "#fff", flexDirection: "column", alignItems: "flex-start", margin: "20px 20px", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)", }}>
-                                    <div style={{ display: "flex", width: "280px", justifyContent: "space-between" }}>
-                                        <img src={COIN} alt="coin" style={{ marginLeft: "10px" }} />
-                                        <input type="text" style={{ background: "transparent", width: "15pc", height: "3.7pc", outline: "none" }} />
-
-                                    </div>
-
-                                </div>
-
-                                <p style={{ color: "#fff", fontSize: "18px", marginTop: "35px" }}>=</p>
-
-
-
-                                <div style={{ display: "flex", width: "230px", color: "#fff", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", margin: "20px 20px", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)", }}>
-                                    <div style={{ display: "flex", width: "280px", justifyContent: "space-between", alignItems: "center" }}>
-                                        <img src={LTC} alt="coin" style={{ marginLeft: "10px", height: "20px" }} />
-                                        <input type="text" style={{ background: "transparent", width: "15pc", height: "2.7pc", outline: "none", marginLeft: '10px' }} />
-                                        <div style={{ display: "inline-flex", padding: "18px 30px", margin: "-5px 2pc", height: "55px", borderRadius: "8px", background: "#86F454", boxShadow: "0px 0px 10px 0px rgba(118, 255, 25, 0.40)", textAlign: "center", textTransform: "uppercase" }}>
-
-                                            <p style={{ textTransform: "uppercase", marginTop: "-13px", fontWeight: "400", fontSize: "14px", fontStyle: "normal", color: "#141722" }}>Request <br /> withdrawal</p>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-
-
-
-
-
-                            </div>
-
-
-
-                            <div>
-                                <div>
-                                    <p style={{ width: "110px", display: "flex", gap: "10px", margin: "15px 25px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>Network Fee: <span>$1.45</span></p>
-                                </div>
-
-                                <div style={{ margin: "0 25px" }}>
-                                    <p style={{ width: "525px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>*You will receive the specified Litecoin amount to your withdrawal address</p>
-
-
-                                    <p style={{ width: "585px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>*The value subtracted from your balance may vary between now and the time we process your withdrawal</p>
-                                </div>
-                            </div>
-
-
-
-
-                        </div>
-
-
-
-                    </div>
-                </div>
-
-
-            </StyledComponent>
-
-        )
-
-    }
-    if (isCoin === "solana") {
-
-        return (
-            <StyledComponent style={{ overflowY: "scroll", overflowX: "hidden", height: "24.5pc" }}>
-
-                {/* title */}
-                <div style={{ color: "#FFF", fontSize: "22px", textTransform: "uppercase", margin: "-10px 3.1pc" }}>
-
-                    <p style={{ display: "flex", alignItems: "center", margin: "10px 0" }}><img onClick={() => setisCoin("")} src={ARROW} alt="arrow" style={{ width: "9px", height: "16px", marginTop: "3px", cursor: 'pointer' }} />
-
-                        <img src={SOL} alt="sol" style={{ width: "32px", height: "32px", marginLeft: "25px" }} />
-
-                        <span style={{ margin: "0 6px", width: "285px" }}>Withdraw Solana</span>
-                        <p style={{ width: "422px", color: "#FFB018", textTransform: "none", fontSize: "14px", marginLeft: "-55px", fontStyle: "normal", fontWeight: "400", }}>View Transactions</p>
-                    </p>
-                </div>
-
-
-                {/* New div sec========================== */}
-
-
-                <div style={{ width: "725px", height: "440px", margin: "0px 40px", marginTop: "40px", borderRadius: "8px", background: "rgba(203, 215, 255, 0.03)" }}>
-                    <div>
-                        <div>
-                            <p style={{ width: "720px", color: "#B1B6C6", padding: "15px 25px", fontSize: "14px", fontStyle: "normal", fontWeight: "400" }}>Please enter the Solana wallet address you wish to receive the funds on. Once confirmed, the withdrawal is usually processed within a few minutes.</p>
-                        </div>
-
-
-                        {/* input sec================ */}
-
-                        <div>
-                            <div>
-                                <p style={{ width: "270px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", textTransform: "uppercase", display: "flex", gap: "5px", padding: "10px 25px" }}>Receiving Solana address <span style={{ color: "#FF4949", fontSize: "12px" }}>*</span></p>
-                            </div>
-
-
-                            <div>
-                                <input type="text" style={{ width: "675px", height: "58px", margin: "5px 25px", padding: "0 10px", color: "#fff", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)" }} />
-                            </div>
-
-                            {/* NEW sec================ */}
-
-                            <div>
-                                <p style={{ width: "270px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", textTransform: "uppercase", display: "flex", gap: "5px", padding: "20px 25px" }}>Withdrawal amount <span style={{ color: "#FF4949", fontSize: "12px" }}>*</span></p>
-                            </div>
-
-
-                            <div style={{ display: "flex", }}>
-                                <div style={{ display: "flex", width: "230px", color: "#fff", flexDirection: "column", alignItems: "flex-start", margin: "20px 20px", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)", }}>
-                                    <div style={{ display: "flex", width: "280px", justifyContent: "space-between" }}>
-                                        <img src={COIN} alt="coin" style={{ marginLeft: "10px" }} />
-                                        <input type="text" style={{ background: "transparent", width: "15pc", height: "3.7pc", outline: "none" }} />
-
-                                    </div>
-
-                                </div>
-
-                                <p style={{ color: "#fff", fontSize: "18px", marginTop: "35px" }}>=</p>
-
-
-
-                                <div style={{ display: "flex", width: "230px", color: "#fff", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", margin: "20px 20px", borderRadius: "6px", background: "rgba(15, 17, 26, 0.55)", }}>
-                                    <div style={{ display: "flex", width: "280px", justifyContent: "space-between", alignItems: "center" }}>
-                                        <img src={SOL} alt="coin" style={{ marginLeft: "10px", height: "20px" }} />
-                                        <input type="text" style={{ background: "transparent", width: "15pc", height: "2.7pc", outline: "none", marginLeft: '10px' }} />
-                                        <div style={{ display: "inline-flex", padding: "18px 30px", margin: "-5px 2pc", height: "55px", borderRadius: "8px", background: "#86F454", boxShadow: "0px 0px 10px 0px rgba(118, 255, 25, 0.40)", textAlign: "center", textTransform: "uppercase" }}>
-
-                                            <p style={{ textTransform: "uppercase", marginTop: "-13px", fontWeight: "400", fontSize: "14px", fontStyle: "normal", color: "#141722" }}>Request <br /> withdrawal</p>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-
-
-
-
-
-                            </div>
-
-
-
-                            <div>
-                                <div>
-                                    <p style={{ width: "110px", display: "flex", gap: "10px", margin: "15px 25px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>Network Fee: <span>$1.45</span></p>
-                                </div>
-
-                                <div style={{ margin: "0 25px" }}>
-                                    <p style={{ width: "525px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>*You will receive the specified Solana amount to your withdrawal address</p>
-
-
-                                    <p style={{ width: "585px", color: "#B1B6C6", fontSize: "12px", fontStyle: "normal", fontWeight: "400" }}>*The value subtracted from your balance may vary between now and the time we process your withdrawal</p>
-                                </div>
-                            </div>
-
-
-
-
-                        </div>
-
-
-
-                    </div>
-                </div>
-            </StyledComponent>
-        )
-
-    }
-
-
-
-
-
-    return (
-
-        <div>
-
-
-
-            <div>
-                <div><p style={{ color: "#FFF", width: "269px", margin: "0 35px", textTransform: "uppercase", fontSize: "22px", fontStyle: "normal", fontWeight: "400", lineHeight: "16.8px" }}>Withdraw options</p>
-                </div>
-            </div>
-
-            {/* icons sec=============== */}
-
-
-            <div>
-
-                <div style={{ display: "flex", marginTop: "15px" }}>
-
-                    <div onClick={() => setisCoin("bitCoin")} style={{ display: "inline-flex", padding: "45px 0px", margin: "20px 35px", flexDirection: "column", alignItems: "center", gap: "26 px", borderRadius: "8px", background: "rgba(203, 215, 255, 0.03)", cursor: "pointer" }}>
-
-                        <img src={BTC} alt="btc" style={{ marginTop: "-20px" }} />
-                        <p style={{ color: "#B1B6C6", textAlign: "center", width: "106px", margin: "0px 35px", marginTop: "24px", fontSize: "14px", fontStyle: "normal", fontWeight: "400", lineHeight: "16.8px" }}>Bitcoin (BTC)</p>
-                    </div>
-
-                    <div onClick={() => setisCoin("ethereum")} style={{ display: "inline-flex", padding: "45px 0px", margin: "20px -22px", flexDirection: "column", alignItems: "center", gap: "26px", borderRadius: "8px", background: "rgba(203, 215, 255, 0.03)", cursor: "pointer" }}>
-
-                        <img src={ETH} alt="eth" style={{ marginTop: "-20px" }} />
-                        <p style={{ color: "#B1B6C6", textAlign: "center", width: "106px", margin: "0 35px", fontSize: "14px", fontStyle: "normal", fontWeight: "400", lineHeight: "16.8px" }}>Ethereum (ETH)</p>
-                    </div>
-
-                    <div onClick={() => setisCoin("latecoin")} style={{ display: "inline-flex", padding: "45px 0px", margin: "20px 35px", flexDirection: "column", alignItems: "center", gap: "26px", borderRadius: "8px", background: "rgba(203, 215, 255, 0.03)", cursor: "pointer" }}>
-
-                        <img src={LTC} alt="ltc" style={{ marginTop: "-20px" }} />
-                        <p style={{ color: "#B1B6C6", textAlign: "center", width: "106px", margin: "0 35px", fontSize: "14px", fontStyle: "normal", fontWeight: "400", lineHeight: "16.8px" }}>Litecoin (LTC)</p>
-                    </div>
-
-
-                    <div onClick={() => setisCoin("solana")} style={{ display: "inline-flex", padding: "45px 0px", margin: "20px -22px", flexDirection: "column", alignItems: "center", gap: "26px", borderRadius: "8px", background: "rgba(203, 215, 255, 0.03)", cursor: "pointer" }}>
-
-                        <img src={SOL} alt="sol" style={{ marginTop: "-20px" }} />
-                        <p style={{ color: "#B1B6C6", textAlign: "center", width: "106px", margin: "0 35px", fontSize: "14px", fontStyle: "normal", fontWeight: "400", lineHeight: "16.8px" }}>Solana (SOL)</p>
-                    </div>
-                </div>
-
-
-                {/* next div=====================================================
-    ================================================================= */}
-
-
-                <div style={{ display: "flex", margin: "-20px 0" }}>
-
-                    <div style={{ display: "inline-flex", margin: "30px 35px", flexDirection: "column", alignItems: "center", gap: "26 px", borderRadius: "8px", background: "rgba(203, 215, 255, 0.03)" }}>
-
-                        <img src={RLB} alt="rlb" style={{ marginTop: "25px" }} />
-                        <p style={{ color: "#B1B6C6", textAlign: "center", width: "108px", margin: "35px 35px", fontSize: "14px", fontStyle: "normal", fontWeight: "400", lineHeight: "16.8px" }}>Rollbit Coin (RLB)</p>
-                    </div>
-
-                    <div style={{ display: "inline-flex", margin: "30px -22px", flexDirection: "column", alignItems: "center", gap: "26px", borderRadius: "8px", background: "rgba(203, 215, 255, 0.03)" }}>
-
-                        <img src={ERC} alt="erc" style={{ marginTop: "15px" }} />
-                        <p style={{ color: "#B1B6C6", textAlign: "center", width: "106px", margin: "0 35px", fontSize: "14px", fontStyle: "normal", fontWeight: "400", lineHeight: "16.8px" }}>ERC-20 </p>
-                        <span style={{ color: "#B1B6C6", textAlign: "center", marginTop: "-24px", fontSize: "14px", fontStyle: "normal", fontWeight: "400", lineHeight: "16.8px" }}>(UsDx, APE, and more)</span>
-                    </div>
-
-                    <div style={{ display: "inline-flex", margin: "30px 35px", flexDirection: "column", alignItems: "center", gap: "26px", borderRadius: "8px", background: "rgba(203, 215, 255, 0.03)" }}>
-
-                        <img src={NFT} alt="nft" style={{ marginTop: "15px", width: "68px", height: "68px" }} />
-                        <p style={{ color: "#B1B6C6", textAlign: "center", width: "106px", margin: "0 35px", fontSize: "14px", fontStyle: "normal", fontWeight: "400", lineHeight: "16.8px" }}>NFT</p>
-                    </div>
-
-                </div>
-
-
-
-
-
-
-
-            </div>
-        </div>
-
-    )
+const styles = {
+  page: {
+    width: 760,
+    maxWidth: "100%",
+    padding: 16,
+  },
+
+  title: {
+    margin: "0 0 10px 0",
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: 500,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gap: 14,
+    marginTop: 14,
+  },
+
+  cardPick: {
+    background: "rgba(203, 215, 255, 0.03)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 14,
+    padding: "18px 12px",
+    cursor: "pointer",
+    display: "grid",
+    justifyItems: "center",
+    gap: 10,
+    minHeight: 130,
+  },
+
+  pickLabel: {
+    color: "#B1B6C6",
+    fontSize: 14,
+    textAlign: "center",
+    lineHeight: "18px",
+  },
+
+  header: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    padding: "8px 8px",
+  },
+
+  backBtn: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    border: "1px solid rgba(255,255,255,0.10)",
+    background: "rgba(255,255,255,0.03)",
+    cursor: "pointer",
+  },
+
+  headerTitleRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    flex: 1,
+    minWidth: 0,
+  },
+
+  headerTitle: {
+    margin: 0,
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: 500,
+    textTransform: "uppercase",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+
+  txLink: {
+    marginLeft: "auto",
+    fontSize: 14,
+    color: "#FFB018",
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+    userSelect: "none",
+  },
+
+  panel: {
+    marginTop: 16,
+    background: "rgba(203, 215, 255, 0.03)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 14,
+    padding: 18,
+  },
+
+  info: {
+    margin: 0,
+    color: "#B1B6C6",
+    fontSize: 14,
+    lineHeight: "22px",
+  },
+
+  form: {
+    marginTop: 14,
+    display: "grid",
+    gap: 14,
+  },
+
+  label: {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    color: "#B1B6C6",
+    fontSize: 12,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+
+  required: { color: "#FF4949" },
+
+  input: {
+    width: "100%",
+    height: 52,
+    borderRadius: 12,
+    border: "1px solid rgba(255,255,255,0.10)",
+    background: "rgba(15, 17, 26, 0.55)",
+    padding: "0 14px",
+    color: "#fff",
+    outline: "none",
+  },
+
+  row: {
+    display: "grid",
+    gridTemplateColumns: "1fr auto 1fr auto",
+    gap: 10,
+    alignItems: "center",
+  },
+
+  inputWithIcon: {
+    position: "relative",
+    width: "100%",
+  },
+
+  icon: {
+    position: "absolute",
+    left: 12,
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: 20,
+    height: 20,
+    opacity: 0.9,
+  },
+
+  amountInput: {
+    width: "100%",
+    height: 52,
+    borderRadius: 12,
+    border: "1px solid rgba(255,255,255,0.10)",
+    background: "rgba(15, 17, 26, 0.55)",
+    padding: "0 14px 0 42px",
+    color: "#fff",
+    outline: "none",
+  },
+
+  equals: { color: "#fff", fontSize: 18, opacity: 0.8, padding: "0 4px" },
+
+  actionBtn: (disabled) => ({
+    height: 52,
+    padding: "0 16px",
+    borderRadius: 12,
+    border: "1px solid rgba(255,255,255,0.10)",
+    background: disabled ? "rgba(255,255,255,0.06)" : "#86F454",
+    boxShadow: disabled ? "none" : "0px 0px 10px rgba(118, 255, 25, 0.40)",
+    color: disabled ? "rgba(255,255,255,0.55)" : "#141722",
+    fontWeight: 700,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    cursor: disabled ? "not-allowed" : "pointer",
+    whiteSpace: "nowrap",
+  }),
+
+  foot: { marginTop: 12, display: "grid", gap: 6 },
+
+  small: { margin: 0, color: "#B1B6C6", fontSize: 12, lineHeight: "18px" },
+
+  fee: { display: "flex", gap: 8, alignItems: "center", color: "#B1B6C6", fontSize: 12 },
+
+  pill: {
+    padding: "4px 10px",
+    borderRadius: 999,
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.10)",
+    color: "#fff",
+  },
+};
+
+// configs (um lugar só)
+const WITHDRAW_COINS = {
+  bitcoin: { key: "bitcoin", label: "Bitcoin", symbol: "BTC", icon: BTC, feeUsd: 1.13 },
+  ethereum: { key: "ethereum", label: "Ethereum", symbol: "ETH", icon: ETH, feeUsd: 1.45 },
+  litecoin: { key: "litecoin", label: "Litecoin", symbol: "LTC", icon: LTC, feeUsd: 1.45 },
+  solana: { key: "solana", label: "Solana", symbol: "SOL", icon: SOL, feeUsd: 1.45 },
+};
+
+// validação leve (apenas UX)
+function looksLikeAddress(coinKey, value) {
+  const v = (value || "").trim();
+  if (!v) return true;
+
+  if (coinKey === "ethereum") return /^0x[a-fA-F0-9]{40}$/.test(v);
+
+  // BTC/LTC/SOL variam, aqui é só “mínimo” pra não travar UX
+  return v.length >= 24;
 }
 
-export default WModel1;
+function WithdrawScreen({ coin, onBack, onViewTransactions }) {
+  const [address, setAddress] = useState("");
+  const [coins, setCoins] = useState("");
+  const [assetAmount, setAssetAmount] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const canSubmit = useMemo(() => {
+    const hasAddress = address.trim().length > 0;
+    const hasAmount = (assetAmount || coins).toString().trim().length > 0;
+    const isOk = looksLikeAddress(coin.key, address);
+    return hasAddress && hasAmount && isOk && !loading;
+  }, [address, assetAmount, coins, coin.key, loading]);
+
+  const submit = async () => {
+    if (!canSubmit) return;
+    try {
+      setLoading(true);
+
+      // TODO: ligar sua API aqui
+      // await gameApi.payment.processWithdrawal({ asset: coin.symbol, address, amountAsset: assetAmount, amountCoins: coins })
+
+      console.log("WITHDRAW:", { asset: coin.symbol, address, coins, assetAmount });
+      alert("✅ Withdrawal request sent!");
+      setCoins("");
+      setAssetAmount("");
+    } catch (e) {
+      alert("❌ Failed to request withdrawal");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={styles.page} className="fade-in">
+      {/* Header */}
+      <div style={styles.header}>
+        <button type="button" style={styles.backBtn} onClick={onBack} aria-label="Go back" title="Back">
+          <img src={ARROW} alt="" style={{ width: 9, height: 16 }} />
+        </button>
+
+        <div style={styles.headerTitleRow}>
+          <img src={coin.icon} alt={coin.symbol} style={{ width: 32, height: 32 }} />
+          <h2 style={styles.headerTitle}>
+            Withdraw {coin.label}
+          </h2>
+
+          <span style={styles.txLink} onClick={onViewTransactions} role="button" tabIndex={0}>
+            View Transactions
+          </span>
+        </div>
+      </div>
+
+      {/* Panel */}
+      <div style={styles.panel} className="glow">
+        <p style={styles.info}>
+          Please enter the {coin.label} wallet address you wish to receive the funds on. Once confirmed,
+          the withdrawal is usually processed within a few minutes.
+        </p>
+
+        <div style={styles.form}>
+          {/* Address */}
+          <div>
+            <div style={styles.label}>
+              Receiving {coin.label} address <span style={styles.required}>*</span>
+            </div>
+            <input
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder={coin.key === "ethereum" ? "0x..." : "Wallet address"}
+              style={styles.input}
+              autoComplete="off"
+              spellCheck={false}
+            />
+            {address.trim().length > 0 && !looksLikeAddress(coin.key, address) && (
+              <p style={{ ...styles.small, color: "#FFB018", marginTop: 8 }}>
+                ⚠ This address doesn’t look valid for {coin.symbol}.
+              </p>
+            )}
+          </div>
+
+          {/* Amount */}
+          <div>
+            <div style={styles.label}>
+              Withdrawal amount <span style={styles.required}>*</span>
+            </div>
+
+            <div style={styles.row}>
+              <div style={styles.inputWithIcon}>
+                <img src={COIN} alt="" style={styles.icon} />
+                <input
+                  value={coins}
+                  onChange={(e) => setCoins(e.target.value)}
+                  placeholder="Amount in Coins"
+                  style={styles.amountInput}
+                  inputMode="decimal"
+                />
+              </div>
+
+              <div style={styles.equals}>=</div>
+
+              <div style={styles.inputWithIcon}>
+                <img src={coin.icon} alt="" style={styles.icon} />
+                <input
+                  value={assetAmount}
+                  onChange={(e) => setAssetAmount(e.target.value)}
+                  placeholder={`Amount in ${coin.symbol}`}
+                  style={styles.amountInput}
+                  inputMode="decimal"
+                />
+              </div>
+
+              <button type="button" onClick={submit} disabled={!canSubmit} style={styles.actionBtn(!canSubmit)}>
+                {loading ? "Processing..." : "Request withdrawal"}
+              </button>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div style={styles.foot}>
+            <div style={styles.fee}>
+              Network Fee: <span style={styles.pill}>${Number(coin.feeUsd).toFixed(2)}</span>
+            </div>
+
+            <p style={styles.small}>
+              *You will receive the specified {coin.label} amount to your withdrawal address.
+            </p>
+            <p style={styles.small}>
+              *The value subtracted from your balance may vary between now and the time we process your withdrawal.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function WModel1({ height = "25pc", onViewTransactions }) {
+  const [selected, setSelected] = useState(null);
+
+  const coin = selected ? WITHDRAW_COINS[selected] : null;
+
+  return (
+    <ScrollWrap style={{ height }}>
+      {!coin ? (
+        <div style={styles.page} className="fade-in">
+          <p style={styles.title}>Withdraw options</p>
+
+          <div style={styles.grid}>
+            <div style={styles.cardPick} onClick={() => setSelected("bitcoin")}>
+              <img src={BTC} alt="Bitcoin" style={{ width: 44, height: 44 }} />
+              <div style={styles.pickLabel}>Bitcoin (BTC)</div>
+            </div>
+
+            <div style={styles.cardPick} onClick={() => setSelected("ethereum")}>
+              <img src={ETH} alt="Ethereum" style={{ width: 44, height: 44 }} />
+              <div style={styles.pickLabel}>Ethereum (ETH)</div>
+            </div>
+
+            <div style={styles.cardPick} onClick={() => setSelected("litecoin")}>
+              <img src={LTC} alt="Litecoin" style={{ width: 44, height: 44 }} />
+              <div style={styles.pickLabel}>Litecoin (LTC)</div>
+            </div>
+
+            <div style={styles.cardPick} onClick={() => setSelected("solana")}>
+              <img src={SOL} alt="Solana" style={{ width: 44, height: 44 }} />
+              <div style={styles.pickLabel}>Solana (SOL)</div>
+            </div>
+          </div>
+
+          <div style={{ ...styles.grid, gridTemplateColumns: "repeat(3, minmax(0, 1fr))", marginTop: 14 }}>
+            <div style={{ ...styles.cardPick, cursor: "not-allowed", opacity: 0.6 }}>
+              <img src={RLB} alt="RLB" style={{ width: 44, height: 44 }} />
+              <div style={styles.pickLabel}>Rollbit Coin (RLB)</div>
+            </div>
+
+            <div style={{ ...styles.cardPick, cursor: "not-allowed", opacity: 0.6 }}>
+              <img src={ERC} alt="ERC-20" style={{ width: 44, height: 44 }} />
+              <div style={styles.pickLabel}>
+                ERC-20<br />
+                <span style={{ fontSize: 12 }}>(UsDx, APE, and more)</span>
+              </div>
+            </div>
+
+            <div style={{ ...styles.cardPick, cursor: "not-allowed", opacity: 0.6 }}>
+              <img src={NFT} alt="NFT" style={{ width: 56, height: 56 }} />
+              <div style={styles.pickLabel}>NFT</div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <WithdrawScreen
+          coin={coin}
+          onBack={() => setSelected(null)}
+          onViewTransactions={onViewTransactions}
+        />
+      )}
+    </ScrollWrap>
+  );
+}
