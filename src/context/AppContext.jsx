@@ -1,16 +1,26 @@
 // AppContext.js
-import React, { createContext, useReducer, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 
-const AppContext = createContext();
+const AppContext = createContext(null);
 
-// Define your initial state
-const initialState = {
+// --------------------
+// Search reducer
+// --------------------
+const initialSearchState = {
   searchQuery: "",
   selectedProvider: "All",
   selectedSort: "All",
+  selectedCollection: "All",
+  selectedTrait: "All",
 };
 
-// Create a reducer to handle state updates
 const searchReducer = (state, action) => {
   switch (action.type) {
     case "UPDATE_SEARCH":
@@ -23,133 +33,214 @@ const searchReducer = (state, action) => {
       return { ...state, selectedCollection: action.payload };
     case "UPDATE_TRAIT":
       return { ...state, selectedTrait: action.payload };
+    case "RESET_SEARCH":
+      return initialSearchState;
     default:
       return state;
   }
 };
 
+// Hook opcional (recomendado)
+export const useApp = () => {
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error("useApp must be used within <AppProvider />");
+  return ctx;
+};
+
 const AppProvider = ({ children }) => {
+  // UI state
   const [selectedOption, setSelectedOption] = useState(null);
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [prevSidebarOpen, setPrevSidebarOpen] = useState(false);
+
   const [isChatBoxOpen, setIsChatBoxOpen] = useState(false);
   const [isChatBoxCollapsed, setIsChatBoxCollapsed] = useState(false);
   const [prevChatBoxOpen, setPrevChatBoxOpen] = useState(false);
-  const [prevSidebarOpen, setPrevSidebarOpen] = useState(false);
+
   const [isMobileScreen, setIsMobileScreen] = useState(false);
   const [isTabletScreen, setIsTabletScreen] = useState(false);
+
   const [openDropdown, setOpenDropdown] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const [onClickFunctionNext, setOnClickFunctionNext] = useState(null);
   const [onClickFunctionPrev, setOnClickFunctionPrev] = useState(null);
-  const [searchState, setSearchState] = useReducer(searchReducer, initialState);
+
+  // Feature state
   const [sportsSelectedOption, setSportsSelectedOption] = useState("/home");
   const [selectedOptionCashier, setSelectedOptionCashier] = useState("Deposit");
   const [selectedSport, setSelectedSport] = useState("/soccer");
 
-  const updateMobileScreen = (option) => {
-    setIsMobileScreen(option);
-  };
-  const updateTabletScreen = (option) => {
-    setIsTabletScreen(option);
-  };
-  const updateCashierOption = (option) => {
-    setSelectedOptionCashier(option);
-  };
-  const updateSelectedSport = (option) => {
-    setSelectedSport(option);
-  };
-
-  const updateSportsSelectedOption = (newOption) => {
-    setSportsSelectedOption(newOption);
-  };
-
-  const updateSelectedOption = (option) => {
-    setSelectedOption(option);
-  };
-  const updateSidebar = (option) => {
-    setIsSidebarOpen(option);
-  };
-  const updateChatBox = (option) => {
-    setIsChatBoxOpen(option);
-  };
-  const updateChatBoxCollapsed = (option) => {
-    setIsChatBoxCollapsed(option);
-  };
-  const updatePrevSidebar = (option) => {
-    setPrevSidebarOpen(option);
-  };
-  const updatePrevChatBox = (option) => {
-    setPrevChatBoxOpen(option);
-  };
-  const toggleDropdown = (option) => {
-    setOpenDropdown(option);
-  };
-  const updateLoggedIn = (option) => {
-    setIsLoggedIn(option);
-  };
-  const updateOnClickFunctionNext = (option) => {
-    setOnClickFunctionNext(option);
-  };
-  const updateOnClickFunctionPrev = (option) => {
-    setOnClickFunctionPrev(option);
-  };
-  const updateProvider = (provider) => {
-    setSearchState({ type: "UPDATE_PROVIDER", payload: provider });
-  };
-  const updateSort = (sort) => {
-    setSearchState({ type: "UPDATE_SORT", payload: sort });
-  };
-  const updateCollection = (collection) => {
-    setSearchState({ type: "UPDATE_COLLECTION", payload: collection });
-  };
-  const updateTrait = (trait) => {
-    setSearchState({ type: "UPDATE_TRAIT", payload: trait });
-  };
-
-  return (
-    <AppContext.Provider
-      value={{
-        selectedOption,
-        isSidebarOpen,
-        isChatBoxOpen,
-        openDropdown,
-        isLoggedIn,
-        onClickFunctionNext,
-        onClickFunctionPrev,
-        searchState,
-        sportsSelectedOption,
-        selectedOptionCashier,
-        selectedSport,
-        isMobileScreen,
-        isTabletScreen,
-        prevSidebarOpen,
-        prevChatBoxOpen,
-        isChatBoxCollapsed,
-        updatePrevSidebar,
-        updatePrevChatBox,
-        updateMobileScreen,
-        updateTabletScreen,
-        updateSelectedOption,
-        updateSidebar,
-        updateChatBox,
-        toggleDropdown,
-        updateLoggedIn,
-        updateOnClickFunctionNext,
-        updateOnClickFunctionPrev,
-        setSearchState,
-        updateProvider,
-        updateSort,
-        updateCollection,
-        updateTrait,
-        updateSportsSelectedOption,
-        updateCashierOption,
-        updateSelectedSport,
-        updateChatBoxCollapsed,
-      }}
-    >
-      {children}
-    </AppContext.Provider>
+  // Search state via reducer
+  const [searchState, dispatchSearch] = useReducer(
+    searchReducer,
+    initialSearchState
   );
+
+  // --------------------
+  // Stable update fns
+  // --------------------
+  const updateSelectedOption = useCallback((v) => setSelectedOption(v), []);
+  const updateSidebar = useCallback((v) => setIsSidebarOpen(v), []);
+  const updatePrevSidebar = useCallback((v) => setPrevSidebarOpen(v), []);
+
+  const updateChatBox = useCallback((v) => setIsChatBoxOpen(v), []);
+  const updateChatBoxCollapsed = useCallback(
+    (v) => setIsChatBoxCollapsed(v),
+    []
+  );
+  const updatePrevChatBox = useCallback((v) => setPrevChatBoxOpen(v), []);
+
+  const updateMobileScreen = useCallback((v) => setIsMobileScreen(v), []);
+  const updateTabletScreen = useCallback((v) => setIsTabletScreen(v), []);
+
+  const toggleDropdown = useCallback((v) => setOpenDropdown(v), []);
+  const updateLoggedIn = useCallback((v) => setIsLoggedIn(v), []);
+
+  const updateOnClickFunctionNext = useCallback(
+    (fn) => setOnClickFunctionNext(() => fn),
+    []
+  );
+  const updateOnClickFunctionPrev = useCallback(
+    (fn) => setOnClickFunctionPrev(() => fn),
+    []
+  );
+
+  const updateSportsSelectedOption = useCallback(
+    (v) => setSportsSelectedOption(v),
+    []
+  );
+  const updateCashierOption = useCallback(
+    (v) => setSelectedOptionCashier(v),
+    []
+  );
+  const updateSelectedSport = useCallback((v) => setSelectedSport(v), []);
+
+  // Search actions
+  const updateSearch = useCallback(
+    (query) => dispatchSearch({ type: "UPDATE_SEARCH", payload: query }),
+    []
+  );
+  const updateProvider = useCallback(
+    (provider) => dispatchSearch({ type: "UPDATE_PROVIDER", payload: provider }),
+    []
+  );
+  const updateSort = useCallback(
+    (sort) => dispatchSearch({ type: "UPDATE_SORT", payload: sort }),
+    []
+  );
+  const updateCollection = useCallback(
+    (collection) =>
+      dispatchSearch({ type: "UPDATE_COLLECTION", payload: collection }),
+    []
+  );
+  const updateTrait = useCallback(
+    (trait) => dispatchSearch({ type: "UPDATE_TRAIT", payload: trait }),
+    []
+  );
+  const resetSearch = useCallback(
+    () => dispatchSearch({ type: "RESET_SEARCH" }),
+    []
+  );
+
+  // --------------------
+  // Memoized context value
+  // --------------------
+  const value = useMemo(
+    () => ({
+      // state
+      selectedOption,
+      isSidebarOpen,
+      prevSidebarOpen,
+      isChatBoxOpen,
+      isChatBoxCollapsed,
+      prevChatBoxOpen,
+      isMobileScreen,
+      isTabletScreen,
+      openDropdown,
+      isLoggedIn,
+      onClickFunctionNext,
+      onClickFunctionPrev,
+      searchState,
+      sportsSelectedOption,
+      selectedOptionCashier,
+      selectedSport,
+
+      // actions
+      updateSelectedOption,
+      updateSidebar,
+      updatePrevSidebar,
+      updateChatBox,
+      updateChatBoxCollapsed,
+      updatePrevChatBox,
+      updateMobileScreen,
+      updateTabletScreen,
+      toggleDropdown,
+      updateLoggedIn,
+      updateOnClickFunctionNext,
+      updateOnClickFunctionPrev,
+      updateSportsSelectedOption,
+      updateCashierOption,
+      updateSelectedSport,
+
+      // search actions
+      updateSearch,
+      updateProvider,
+      updateSort,
+      updateCollection,
+      updateTrait,
+      resetSearch,
+
+      // advanced (se precisar)
+      dispatchSearch,
+    }),
+    [
+      selectedOption,
+      isSidebarOpen,
+      prevSidebarOpen,
+      isChatBoxOpen,
+      isChatBoxCollapsed,
+      prevChatBoxOpen,
+      isMobileScreen,
+      isTabletScreen,
+      openDropdown,
+      isLoggedIn,
+      onClickFunctionNext,
+      onClickFunctionPrev,
+      searchState,
+      sportsSelectedOption,
+      selectedOptionCashier,
+      selectedSport,
+
+      updateSelectedOption,
+      updateSidebar,
+      updatePrevSidebar,
+      updateChatBox,
+      updateChatBoxCollapsed,
+      updatePrevChatBox,
+      updateMobileScreen,
+      updateTabletScreen,
+      toggleDropdown,
+      updateLoggedIn,
+      updateOnClickFunctionNext,
+      updateOnClickFunctionPrev,
+      updateSportsSelectedOption,
+      updateCashierOption,
+      updateSelectedSport,
+
+      updateSearch,
+      updateProvider,
+      updateSort,
+      updateCollection,
+      updateTrait,
+      resetSearch,
+
+      dispatchSearch,
+    ]
+  );
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
 export { AppContext, AppProvider };
